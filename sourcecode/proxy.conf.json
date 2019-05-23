@@ -1,0 +1,10 @@
+{
+  "/secure": {
+    "target": "http://cloudmidas.local/",
+    "secure": false
+  },
+  "/__clockwork": {
+    "target": "http://cloudmidas.local/",
+    "secure": false
+  }
+}

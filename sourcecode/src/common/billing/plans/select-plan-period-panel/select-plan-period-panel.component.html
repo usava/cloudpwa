@@ -1,0 +1,53 @@
+<div class="subscription-period-step step-container" *ngIf="state.initialPlan">
+    <div class="left-col">
+        <div *ngIf="!state.initialPlan.custom">
+            <div class="title" trans>Select the duration of your plan. Longer plans offer better discounts!</div>
+            <mat-radio-group class="periods" [(ngModel)]="state.radioGroupModel"
+                             (change)="state.selectPlanById(state.radioGroupModel)">
+                <div class="radio-button-wrapper no-label">
+                    <mat-radio-button [value]="state.initialPlan.id" class="period" color="primary">
+                        <div class="name" trans>1 {{state.initialPlan.interval}} subscription:</div>
+                        <div class="price">{{state.initialPlan.amount | currency:state.initialPlan.currency}}
+                            /{{state.initialPlan.interval}}</div>
+                    </mat-radio-button>
+                </div>
+
+
+                <div class="radio-button-wrapper" *ngFor="let plan of state.getChildPlans(state.initialPlan)">
+                    <div class="savings-label" trans>
+                        Save {{getPlanSavings(state.selectedPlan.parent || state.selectedPlan, plan)}}%
+                    </div>
+                    <mat-radio-button [value]="plan.id" class="period" color="primary">
+                        <div class="name">{{plan.name}}:</div>
+                        <div class="price">{{getPlanPerMonthAmount(plan) | currency:plan.currency}}
+                            /{{state.initialPlan.interval}}</div>
+                    </mat-radio-button>
+                </div>
+            </mat-radio-group>
+        </div>
+
+        <div *ngIf="state.initialPlan.custom">
+            <div class="title" trans>Just pick up plan as you want to. Custom fee for every budget!</div>
+            <div class="form-group no-label">
+                From 10
+                <mat-slider class="select-plan-custom-price-slider" [value]="state.initialPlan.amount" class="period" color="primary" min="10" step="1"
+                            max="100" thumbLabel tickInterval="1" [(ngModel)]="state.initialPlan.amount">
+                </mat-slider>
+                100
+                <span class="currency">{{state.initialPlan.currency_symbol}}</span>
+            </div>
+            <div class="name"> Your plan is {{state.initialPlan.name}}:
+                <span class="price">{{state.initialPlan.amount}} <span
+                        class="currency">{{state.initialPlan.currency_symbol}}</span></span>
+                <input type="hidden" [value]="state.initialPlan.id"/>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button mat-button matStepperPrevious trans>Back</button>
+            <button mat-raised-button color="primary" (click)="selected.emit()" trans>Select</button>
+        </div>
+    </div>
+
+    <upgrade-page-aside *ngIf="showSidebar" [plan]="state.selectedPlan" class="right-col"></upgrade-page-aside>
+</div>
