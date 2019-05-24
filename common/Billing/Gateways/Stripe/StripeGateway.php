@@ -85,7 +85,7 @@ class StripeGateway implements GatewayInterface
         }
 
         $response = $this->gateway->createCard($params)->send();
-//die('I am here');
+
         if ( ! $response->isSuccessful()) {
             $data = $response->getData();
 

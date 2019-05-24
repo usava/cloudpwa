@@ -1,6 +1,6 @@
 <?php namespace Common\Billing\Gateways\Authorizenet;
 
-use Omnipay\Stripe\Message\CreatePlanRequest;
+use Omnipay\Authorizenet\Message\AIMAuthorizeRequest as CreatePlanRequest;
 
 class AuthorizenetCreatePlanRequest extends CreatePlanRequest
 {

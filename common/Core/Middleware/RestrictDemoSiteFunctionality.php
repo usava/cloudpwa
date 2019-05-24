@@ -121,7 +121,7 @@ class RestrictDemoSiteFunctionality
         $serverKeys = ['google_id', 'google_secret', 'twitter_id', 'twitter_secret', 'facebook_id',
             'facebook_secret', 'spotify_id', 'spotify_secret', 'lastfm_api_key', 'soundcloud_api_key',
             'discogs_id', 'discogs_secret', 'sentry_dns', 'mailgun_secret', 'sentry_dsn', 'paypal_client_id',
-            'paypal_secret', 'stripe_key', 'stripe_secret', 'mail_password', 'tmdb_api_key'
+            'paypal_secret', 'stripe_key', 'stripe_secret', 'mail_password', 'tmdb_api_key', 'anet_api_login_id', 'anet_api_transaction_key'
         ];
 
         $clientKeys = ['youtube_api_key', 'logging.sentry_public', 'analytics.google_id',

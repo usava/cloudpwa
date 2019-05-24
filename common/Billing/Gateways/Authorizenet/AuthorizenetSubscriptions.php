@@ -2,9 +2,9 @@
 
 use Carbon\Carbon;
 use Common\Billing\BillingPlan;
-use Common\Auth\User;
+use App\User;
 use Common\Billing\Subscription;
-use Omnipay\Authorizenet\CIMGateway as Gateway;
+use Omnipay\Authorizenet\AIMGateway as Gateway;
 use Common\Billing\GatewayException;
 use Common\Billing\Gateways\Contracts\GatewaySubscriptionsInterface;
 

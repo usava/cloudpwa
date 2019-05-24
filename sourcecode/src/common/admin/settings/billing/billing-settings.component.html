@@ -50,7 +50,24 @@
 
             <div class="input-container">
                 <label for="billing.stripe.secret" trans>Stripe Secret</label>
-                <input name="billing.stripe.secret" id="billing.stripe.secret" [(ngModel)]="state.server['stripe_secret']" required>
+                <input name="billing.stripe.secret" id="billing.stripe.secret" [(ngModel)]="state.server['stripe_secret']" required />
+            </div>
+        </ng-container>
+
+        <div class="setting-toggle-container">
+            <mat-slide-toggle name="billing.enable.anet" id="billing.enable.anet" [(ngModel)]="state.client['billing.anet.enable']" trans>Authorize.net Gateway</mat-slide-toggle>
+            <p trans>Enable Authorize.net payment gateway.</p>
+        </div>
+
+        <ng-container *ngIf="state.client['billing.anet.enable']">
+            <div class="input-container">
+                <label for="billing.anet.id" trans>Authorize.net API Login ID</label>
+                <input name="billing.anet.id" id="billing.anet.id" [(ngModel)]="state.server['anet_api_login_id']" required>
+            </div>
+
+            <div class="input-container">
+                <label for="billing.anet.secret" trans>Authorize.net API Transaction Key</label>
+                <input name="billing.anet.secret" id="billing.anet.secret" [(ngModel)]="state.server['anet_api_transaction_key']" required>
             </div>
         </ng-container>
 

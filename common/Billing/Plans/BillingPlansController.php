@@ -95,7 +95,7 @@ class BillingPlansController extends Controller
 
         $plan = $this->plan->create($data);
 
-        if (!$plan->free) {
+        if (!$plan->free && !$plan->interval == 'once') {
             $this->factory->getEnabledGateways()->each(function (GatewayInterface $gateway) use ($plan) {
                 $gateway->plans()->create($plan);
             });

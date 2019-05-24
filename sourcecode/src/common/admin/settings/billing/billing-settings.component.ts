@@ -12,6 +12,7 @@ export class BillingSettingsComponent extends SettingsPanelComponent implements 
 
     ngOnInit() {
         this.acceptedCards = this.settings.getJson('billing.accepted_cards', []);
+        console.log(this);
     }
 
     /**

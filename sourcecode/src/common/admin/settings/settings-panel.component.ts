@@ -29,7 +29,7 @@ export class SettingsPanelComponent implements OnDestroy {
         protected pages: Pages,
         protected artisan: ArtisanService,
         protected customHomepage: CustomHomepage,
-        public state: SettingsState,
+        public state: SettingsState
     ) {}
 
     ngOnDestroy() {

@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Omnipay\Omnipay;
 use Common\Auth\User;
-use Omnipay\Authorizenet\CIMGateway as Gateway;
+use Omnipay\AuthorizeNet\AIMGateway as Gateway;
 use Omnipay\Common\CreditCard;
 use Common\Billing\GatewayException;
 use Omnipay\Common\Exception\InvalidCreditCardException;
@@ -22,7 +22,7 @@ class AuthorizenetGateway implements GatewayInterface
     private $plans;
 
     /**
-     * @var StripeSubscriptions
+     * @var anetSubscriptions
      */
     private $subscriptions;
 
@@ -31,14 +31,14 @@ class AuthorizenetGateway implements GatewayInterface
      */
     public function __construct()
     {
-        $this->gateway = Omnipay::create('Stripe');
+        $this->gateway = Omnipay::create('AuthorizeNet_AIM');
 
         $this->gateway->initialize(array(
-            'apiKey' => config('services.stripe.secret'),
+            'apiKey' => config('services.anet.transaction_key'),
         ));
 
         $this->plans = new AuthorizenetPlans($this->gateway);
-        $this->subscriptions = new StripeSubscriptions($this->gateway);
+        $this->subscriptions = new AuthorizenetSubscriptions($this->gateway);
     }
 
     public function plans()
@@ -65,7 +65,7 @@ class AuthorizenetGateway implements GatewayInterface
     }
 
     /**
-     * Add a new card to customer on stripe.
+     * Add a new card to customer on anet.
      *
      * @param User $user
      * @param string $token
@@ -77,9 +77,9 @@ class AuthorizenetGateway implements GatewayInterface
     {
         $params['token'] = $token;
 
-        //create new stripe customer or attach to existing one
-        if ($user->stripe_id) {
-            $params['customerReference'] = $user->stripe_id;
+        //create new anet customer or attach to existing one
+        if ($user->anet_id) {
+            $params['customerReference'] = $user->anet_id;
         } else {
             $params['email'] = $user->email;
         }
@@ -89,7 +89,7 @@ class AuthorizenetGateway implements GatewayInterface
         if ( ! $response->isSuccessful()) {
             $data = $response->getData();
 
-            //if card validation fails on stripe, throw exception so we can show message to user
+            //if card validation fails on anet, throw exception so we can show message to user
             if (isset($data['error']['type']) && $data['error']['type'] === 'card_error') {
                 throw new InvalidCreditCardException($data['error']['message']);
             }
@@ -97,13 +97,13 @@ class AuthorizenetGateway implements GatewayInterface
             throw new GatewayException($response->getMessage());
         }
 
-        //store stripe id on user model, if needed
-        if ($user->stripe_id !== $stripeId = $response->getCustomerReference()) {
-            $user->fill(['stripe_id' => $stripeId])->save();
+        //store anet id on user model, if needed
+        if ($user->anet_id !== $anetId = $response->getCustomerReference()) {
+            $user->fill(['anet_id' => $anetId])->save();
         }
 
         //TODO: check if user has more then one card
-        $this->setDefaultCustomerSource($user, $response->getCardReference());
+        //$this->setDefaultCustomerSource($user, $response->getCardReference());
 
         return $user;
     }
@@ -119,7 +119,7 @@ class AuthorizenetGateway implements GatewayInterface
     public function setDefaultCustomerSource(User $user, $cardReference)
     {
         $response = $this->gateway->updateCustomer([
-            'customerReference' => $user->stripe_id,
+            'customerReference' => $user->anet_id,
         ])->sendData(['default_source' => $cardReference]);
 
         //default source

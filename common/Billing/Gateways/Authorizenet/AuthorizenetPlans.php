@@ -1,7 +1,7 @@
 <?php namespace Common\Billing\Gateways\Authorizenet;
 
 use Common\Billing\BillingPlan;
-use Omnipay\Authorizenet\CIMGateway as Gateway;
+use Omnipay\Authorizenet\AIMGateway as Gateway;
 use Common\Billing\GatewayException;
 use Common\Billing\Gateways\Contracts\GatewayPlansInterface;
 

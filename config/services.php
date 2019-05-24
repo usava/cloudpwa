@@ -66,4 +66,10 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+
+    'anet' => [
+        'model' => App\User::class,
+        'login' => env('ANET_API_LOGIN_ID'),
+        'transaction_key' => env('ANET_API_TRANSACTION_KEY'),
+    ],
 ];
