@@ -24,7 +24,7 @@ class GatewayFactory
         'paypal' => PaypalGateway::class,
         'stripe' => StripeGateway::class,
 //        'payvision' => AcaptureGateway::class,
-        'authorizenet' => AuthorizenetGateway::class
+        'anet' => AuthorizenetGateway::class
     ];
 
     /**

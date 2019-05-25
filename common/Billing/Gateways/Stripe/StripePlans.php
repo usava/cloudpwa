@@ -44,6 +44,7 @@ class StripePlans implements GatewayPlansInterface
      * @param BillingPlan $plan
      * @return bool
      * @throws GatewayException
+     * @throws \ReflectionException
      */
     public function create(BillingPlan $plan)
     {

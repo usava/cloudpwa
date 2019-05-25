@@ -1,11 +1,20 @@
-import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnDestroy, Output, ViewEncapsulation } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnDestroy,
+    Output,
+    ViewEncapsulation
+} from '@angular/core';
 import {finalize} from 'rxjs/operators';
 import {User} from '../../core/types/models/User';
 import {Settings} from '../../core/config/settings.service';
 import {LazyLoaderService} from '../../core/utils/lazy-loader.service';
 import {CurrentUser} from '../../auth/current-user';
-import { Subscriptions } from '../../shared/billing/subscriptions.service';
-import { Toast } from '../../core/ui/toast.service';
+import {Subscriptions} from '../../shared/billing/subscriptions.service';
+import {Toast} from '../../core/ui/toast.service';
 
 @Component({
     selector: 'credit-card-form',
@@ -56,6 +65,18 @@ export class CreditCardFormComponent implements OnDestroy, AfterViewInit {
     private stripe: stripe.Stripe;
 
     /**
+     * Mounted stripe elements.
+     */
+    private anetElements = [];
+
+    /**
+     * Stripe.js instance.
+     */
+    private anet;
+
+    public paymentGateway: string;
+
+    /**
      * CreditCardFormComponent Constructor.
      */
     constructor(
@@ -67,10 +88,21 @@ export class CreditCardFormComponent implements OnDestroy, AfterViewInit {
         private toast: Toast,
     ) {
         this.resetForm();
+        this.paymentGateway = 'anet';
+        if (this.settings.get('billing.stripe.enable')) {
+            this.paymentGateway = 'stripe';
+        }
     }
 
     ngAfterViewInit() {
-        this.initStripe();
+
+        if (this.settings.get('billing.anet.enable')) {
+            this.initAnet();
+        } else if (this.settings.get('billing.stripe.enable')) {
+
+            this.initStripe();
+        }
+
     }
 
     ngOnDestroy() {
@@ -86,15 +118,21 @@ export class CreditCardFormComponent implements OnDestroy, AfterViewInit {
             return this.toast.open('You can\'t do that on demo site.');
         }
 
+        // console.log(this, this.settings);
+        // debugger;
         this.loading = true;
 
-        const {token, error} = await this.stripe.createToken(this.stripeElements[0]);
+        if (this.settings.get('billing.anet.enable')) {
+            this.sendPaymentDataToAnet();
+        } else if (this.settings.get('billing.stripe.enable')) {
+            const {token, error} = await this.stripe.createToken(this.stripeElements[0]);
 
-        if (error) {
-            this.error = error.message;
-            this.loading = false;
-        } else {
-            this.addCardToUser(token);
+            if (error) {
+                this.error = error.message;
+                this.loading = false;
+            } else {
+                this.addCardToUser(token);
+            }
         }
     }
 
@@ -154,5 +192,81 @@ export class CreditCardFormComponent implements OnDestroy, AfterViewInit {
      */
     private resetForm() {
         this.error = null;
+    }
+
+    private initAnet() {
+        this.lazyLoader.loadScript('https://jstest.authorize.net/v1/Accept.js');
+        this.lazyLoader.loadScript('https://jstest.authorize.net/v3/AcceptUI.js');
+            // .then(() => {
+                // const fields = ['cardNumber', 'cardExpiry', 'cardCvc'] as stripe.elements.elementsType[];
+                // this.stripe = Stripe(this.settings.get('billing.stripe_public_key'));
+                // const elements = this.stripe.elements();
+                //
+                // fields.forEach(field => {
+                //     const el = elements.create(field, {classes: {base: 'base'}});
+                //     el.mount('#' + field);
+                //     el.on('change', this.onChange.bind(this));
+                //     this.stripeElements.push(el);
+                // });
+            // });
+    }
+
+    private sendPaymentDataToAnet() {
+        const authData = {
+            clientKey: '' as string,
+            apiLoginID: '' as string
+        };
+        authData.clientKey = this.settings.get('billing.anet_public_client_key');
+        authData.apiLoginID = this.settings.get('billing.anet_api_login_id');
+
+        const cardData = {
+            cardNumber: '' as string,
+            month: '' as string,
+            year: '' as string,
+            cardCode: '' as string
+        };
+        cardData.cardNumber = document.getElementById("cardNumber")['value'];
+        cardData.month = document.getElementById("expMonth")['value'];
+        cardData.year = document.getElementById("expYear")['value'];
+        cardData.cardCode = document.getElementById("cardCode")['value'];
+
+        const secureData = {
+            authData: '' as any,
+            cardData: '' as any
+        };
+        secureData.authData = authData;
+        secureData.cardData = cardData;
+
+        // @ts-ignore
+        Accept.dispatchData(secureData, responseHandler);
+
+        function responseHandler(response) {
+            if (response.messages.resultCode === "Error") {
+                var i = 0;
+                while (i < response.messages.message.length) {
+                    console.log(
+                        response.messages.message[i].code + ": " +
+                        response.messages.message[i].text
+                    );
+                    i = i + 1;
+                }
+            } else {
+                this.paymentFormUpdate(response.opaqueData);
+            }
+        }
+    }
+
+    private paymentFormUpdate(opaqueData) {
+        document.getElementById("dataDescriptor")['value'] = opaqueData.dataDescriptor;
+        document.getElementById("dataValue")['value'] = opaqueData.dataValue;
+
+        // If using your own form to collect the sensitive data from the customer,
+        // blank out the fields before submitting them to your server.
+        // document.getElementById("cardNumber").value = "";
+        // document.getElementById("expMonth").value = "";
+        // document.getElementById("expYear").value = "";
+        // document.getElementById("cardCode").value = "";
+
+        // document.getElementById("paymentForm").submit();
     }
 }

@@ -4,6 +4,7 @@ use Common\Billing\BillingPlan;
 use Omnipay\Authorizenet\AIMGateway as Gateway;
 use Common\Billing\GatewayException;
 use Common\Billing\Gateways\Contracts\GatewayPlansInterface;
+use ReflectionMethod;
 
 class AuthorizenetPlans implements GatewayPlansInterface
 {
@@ -68,7 +69,7 @@ class AuthorizenetPlans implements GatewayPlansInterface
         }
 
         //TODO: fix this when omnipay stripe package is updated
-        $r = new \ReflectionMethod(Gateway::class, 'createRequest');
+        $r = new ReflectionMethod(Gateway::class, 'createRequest');
         $r->setAccessible(true);
         //TODO !!!Refactor AuthorizenetCreatePlanRequest class invalid !!!
         $response = $r->invoke($this->gateway, AuthorizenetCreatePlanRequest::class, $params)->send();

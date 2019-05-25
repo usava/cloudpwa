@@ -6,6 +6,7 @@ credit-card-form {
 
   .input-container {
     max-width: 400px;
+    margin: 25px 0;
 
     input, select, .fake-input {
       border-radius: 4px;
@@ -34,5 +35,12 @@ credit-card-form {
 
   button[type=submit] {
     margin-bottom: 5px;
+  }
+
+  .gatewayName {
+    text-align: center;
+    width: 100%;
+    font-size: 34px;
+    color: lightgrey;
   }
 }

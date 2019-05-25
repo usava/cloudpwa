@@ -1,4 +1,4 @@
-<form (ngSubmit)="submitForm()" class="card-form many-inputs" ngNativeValidate>
+<form (ngSubmit)="submitForm()" class="card-form many-inputs" ngNativeValidate *ngIf="paymentGateway == 'stripe'">
     <div class="input-container">
         <label for="cardNumber" trans>Credit or Debit Card</label>
         <div id="cardNumber" class="fake-input"></div>
@@ -19,4 +19,38 @@
     <order-summary *ngIf="showOrderSummary"></order-summary>
 
     <button type="submit" *ngIf="showSubmitButton" mat-raised-button color="primary" [disabled]="loading">{{submitButtonText}}</button>
+    <div class="gatewayName">Stripe</div>
+</form>
+
+
+<form id="paymentForm"
+      method="POST"
+      (ngSubmit)="submitForm()" *ngIf="paymentGateway == 'anet'">
+    <div class="input-container">
+        <label for="cardNumber" trans>Credit or Debit Card</label>
+        <input type="text" id="cardNumber"
+               class="InputElement is-empty Input Input--empty"
+               autocomplete="cc-number" autocorrect="off"
+               spellcheck="false"
+               name="cardnumber" inputmode="numeric"
+               aria-label="Credit or debit card number"
+               placeholder="1234 1234 1234 1234" aria-placeholder="1234 1234 1234 1234"
+               aria-invalid="false" value=""/>
+    </div>
+
+    <div class="input-container">
+        <label for="cardExpiry" trans>Card Expiration</label>
+        <input type="numeric" max="12" maxlength="2" name="expMonth" id="expMonth"  placeholder="MM" style="width: 64px"/> /
+        <input type="numeric" max="99" maxlength="2"  name="expYear" id="expYear" placeholder="YY" style="width: 64px"/>
+    </div>
+
+    <div class="input-container">
+        <label for="cardCode" trans>CVC</label>
+        <input type="numeric" maxlength="3" name="cardCode" id="cardCode" placeholder="CVC"/>
+    </div>
+
+    <input type="hidden" name="dataValue" id="dataValue" />
+    <input type="hidden" name="dataDescriptor" id="dataDescriptor" />
+    <button type="submit" mat-raised-button color="primary" [disabled]="loading" *ngIf="showSubmitButton">{{submitButtonText}}</button>
+    <div class="gatewayName">Authorize.net</div>
 </form>

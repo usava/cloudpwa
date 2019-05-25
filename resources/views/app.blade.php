@@ -13,7 +13,7 @@
 
 @section('angular-scripts')
     {{--angular scripts begin--}}
-		<script type="text/javascript" src="client/runtime.679a9e4c21302bff2e8e.js"></script>
+		<script type="text/javascript" src="client/runtime.b62f68442d392ca824be.js"></script>
 		<script type="text/javascript" src="client/polyfills.5d0860ad20b3a6282b60.js"></script>
 		<script type="text/javascript" src="client/main.4ff621d29ec83b64119c.js"></script>
 	{{--angular scripts end--}}
